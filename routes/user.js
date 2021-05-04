@@ -9,8 +9,35 @@ router.get('/', async (req, res) => {
 			username: true,
 			posts: true,
 		},
+	});
+
+	res.json(users);
+});
+
+router.post('/', async (req, res) => {
+	const { username } = req.body;
+
+	const userExists = await user.findUnique({
+		where: {
+      username,
+		},
+    select: {
+      username: true
+    }
   });
-  
-  res.json(users)
+
+  if (userExists) {
+    return res.status(400).json({
+      msg: "すでに存在してます"
+    })
+  }
+
+  const newUser = await user.create({
+    data: {
+      username
+    }
+  })
+
+  res.json(newUser)
 });
 module.exports = router;
